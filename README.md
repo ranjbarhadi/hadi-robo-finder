@@ -270,9 +270,11 @@ This tool is provided as-is for educational and security research purposes.
 Feel free to submit issues or pull requests for improvements.
 
 ## Author
-
+Hadi ranjbar - 
 Built for ethical bug bounty hunters and security researchers.
 
+## contact:
+- Email: ranjbar.hadi@live.com
 ---
 
 **Happy Hunting! 🔍**
