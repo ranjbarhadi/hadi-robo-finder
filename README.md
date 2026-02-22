@@ -25,10 +25,10 @@ HADI ROBO FINDER queries archive.org for all historical snapshots of a target's 
 The easiest way to install HADI ROBO FINDER:
 
 ```bash
-go install github.com/ranjbarhadi/hadi-robo-finder@latest
+go install github.com/ranjbarhadi/hadi-robo-finder/cmd/hrf@latest
 ```
 
-This installs the binary directly to your `$GOPATH/bin` directory (usually `~/go/bin`).
+This installs the binary as `hrf` directly to your `$GOPATH/bin` directory (usually `~/go/bin`).
 
 Make sure `$GOPATH/bin` is in your PATH:
 ```bash
@@ -37,7 +37,7 @@ export PATH=$PATH:$(go env GOPATH)/bin
 
 Then use it directly:
 ```bash
-hadi-robo-finder https://example.com
+hrf https://example.com
 ```
 
 ### Build from Source (for development)
@@ -50,10 +50,10 @@ git clone https://github.com/ranjbarhadi/hadi-robo-finder.git
 cd hadi-robo-finder
 
 # Build the binary
-go build -o hadi-robo-finder main.go
+go build -o hrf ./cmd/hrf
 
 # Run it
-./hadi-robo-finder https://example.com
+./hrf https://example.com
 ```
 
 ### Requirements
@@ -66,7 +66,7 @@ go build -o hadi-robo-finder main.go
 ### Basic Usage
 
 ```bash
-./hadi-robo-finder https://example.com
+hrf https://example.com
 ```
 
 ### Verbose Mode
@@ -74,13 +74,13 @@ go build -o hadi-robo-finder main.go
 Get detailed progress information:
 
 ```bash
-./hadi-robo-finder -v https://example.com
+hrf -v https://example.com
 ```
 
 Or with flag after URL:
 
 ```bash
-./hadi-robo-finder https://example.com -v
+hrf https://example.com -v
 ```
 
 ### Help Information
@@ -88,7 +88,7 @@ Or with flag after URL:
 Get detailed help and usage information:
 
 ```bash
-./hadi-robo-finder -h
+hrf -h
 ```
 
 This displays comprehensive documentation including:
@@ -104,7 +104,7 @@ This displays comprehensive documentation including:
 Filter snapshots by year to focus on recent results:
 
 ```bash
-./hadi-robo-finder -year 2020 https://example.com
+hrf -year 2020 https://example.com
 ```
 
 This will only fetch robots.txt snapshots from January 1st, 2020 onwards, which:
@@ -114,7 +114,7 @@ This will only fetch robots.txt snapshots from January 1st, 2020 onwards, which:
 
 **Combine with verbose mode:**
 ```bash
-./hadi-robo-finder -v -year 2022 https://example.com
+hrf -v -year 2022 https://example.com
 ```
 
 ### Examples
@@ -122,31 +122,31 @@ This will only fetch robots.txt snapshots from January 1st, 2020 onwards, which:
 **Simple domain:**
 
 ```bash
-./hadi-robo-finder https://tesla.com
+hrf https://tesla.com
 ```
 
 **Without scheme (auto-adds https://):**
 
 ```bash
-./hadi-robo-finder example.com
+hrf example.com
 ```
 
 **Verbose output:**
 
 ```bash
-./hadi-robo-finder -v https://microsoft.com
+hrf -v https://microsoft.com
 ```
 
 **Filter by year (2020 onwards):**
 
 ```bash
-./hadi-robo-finder -year 2020 https://example.com
+hrf -year 2020 https://example.com
 ```
 
 **Save results to file:**
 
 ```bash
-./hadi-robo-finder https://example.com > results.txt
+hrf https://example.com > results.txt
 ```
 
 ## Output
@@ -206,7 +206,7 @@ https://example.com/api/v1/
 
 ## Configuration
 
-You can modify these constants in `main.go`:
+You can modify these constants in `cmd/hrf/main.go`:
 
 ```go
 const (
