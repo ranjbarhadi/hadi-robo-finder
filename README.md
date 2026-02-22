@@ -31,11 +31,13 @@ go install github.com/ranjbarhadi/hadi-robo-finder/cmd/hrf@latest
 This installs the binary as `hrf` directly to your `$GOPATH/bin` directory (usually `~/go/bin`).
 
 Make sure `$GOPATH/bin` is in your PATH:
+
 ```bash
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
 Then use it directly:
+
 ```bash
 hrf https://example.com
 ```
@@ -92,6 +94,7 @@ hrf -h
 ```
 
 This displays comprehensive documentation including:
+
 - Description of the tool
 - Command-line options
 - How it works step-by-step
@@ -108,11 +111,13 @@ hrf -year 2020 https://example.com
 ```
 
 This will only fetch robots.txt snapshots from January 1st, 2020 onwards, which:
+
 - Makes the scan faster (fewer snapshots to process)
 - Focuses on more recent/relevant paths
 - Reduces noise from very old archived content
 
 **Combine with verbose mode:**
+
 ```bash
 hrf -v -year 2022 https://example.com
 ```
@@ -270,11 +275,14 @@ This tool is provided as-is for educational and security research purposes.
 Feel free to submit issues or pull requests for improvements.
 
 ## Author
-Hadi ranjbar - 
+
+Hadi ranjbar -
 Built for ethical bug bounty hunters and security researchers.
 
 ## contact:
+
 - Email: ranjbar.hadi@live.com
+
 ---
 
 **Happy Hunting! 🔍**
