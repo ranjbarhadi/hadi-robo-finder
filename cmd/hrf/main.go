@@ -42,6 +42,8 @@ type PathCollector struct {
 	paths map[string]bool
 }
 
+var version = "dev"
+
 func main() {
 	// Parse command-line arguments manually to allow flags at any position
 	var verbose bool
@@ -106,6 +108,7 @@ func main() {
 
 	if verbose {
 		fmt.Printf("[*] Starting HADI ROBO FINDER\n")
+		fmt.Printf("[*] Version: %s\n", version)
 		fmt.Printf("[*] Input URL: %s\n", targetURL)
 		if fromYear != "" {
 			fmt.Printf("[*] Date filter: From %s to now\n", fromYear)

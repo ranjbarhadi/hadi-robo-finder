@@ -1,0 +1,112 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target.os }}-${{ matrix.target.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - os: linux
+            arch: amd64
+            extension: ""
+            archive: tar.gz
+          - os: darwin
+            arch: amd64
+            extension: ""
+            archive: tar.gz
+          - os: windows
+            arch: amd64
+            extension: ".exe"
+            archive: zip
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Derive app name and build timestamp
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "APP_NAME=${GITHUB_REPOSITORY##*/}" >> "$GITHUB_ENV"
+          echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+
+      - name: Build binary
+        shell: bash
+        env:
+          CGO_ENABLED: 0
+          GOOS: ${{ matrix.target.os }}
+          GOARCH: ${{ matrix.target.arch }}
+        run: |
+          set -euo pipefail
+          build_dir="dist/${GOOS}-${GOARCH}"
+          release_dir="release-assets/${GOOS}-${GOARCH}"
+          binary_name="${APP_NAME}-${GOOS}-${GOARCH}${{ matrix.target.extension }}"
+
+          mkdir -p "$build_dir" "$release_dir"
+
+          go build \
+            -trimpath \
+            -buildvcs=false \
+            -ldflags="-s -w -X main.version=${GITHUB_REF_NAME}" \
+            -o "$build_dir/$binary_name" \
+            ./cmd/hrf
+
+          if [ "${{ matrix.target.archive }}" = "zip" ]; then
+            zip -9j "$release_dir/${APP_NAME}-${GOOS}-${GOARCH}.zip" "$build_dir/$binary_name"
+            sha256sum "$release_dir/${APP_NAME}-${GOOS}-${GOARCH}.zip" > "$release_dir/${APP_NAME}-${GOOS}-${GOARCH}.zip.sha256"
+          else
+            tar -C "$build_dir" -czf "$release_dir/${APP_NAME}-${GOOS}-${GOARCH}.tar.gz" "$binary_name"
+            sha256sum "$release_dir/${APP_NAME}-${GOOS}-${GOARCH}.tar.gz" > "$release_dir/${APP_NAME}-${GOOS}-${GOARCH}.tar.gz.sha256"
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target.os }}-${{ matrix.target.arch }}
+          path: release-assets/${{ matrix.target.os }}-${{ matrix.target.arch }}/*
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Clean temporary build files
+        shell: bash
+        run: rm -rf dist release-assets
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          files: release-assets/**/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
